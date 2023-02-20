@@ -25,9 +25,18 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['pluginname'] = 'Parsons Problem question type';
+$string['pluginname'] = 'Parsons Problem question type.';
 $string['pluginnamesummary'] = 'A question type where the student has to select, order, and indent code fragments.';
 $string['pluginname_link'] = 'question/type/parsonsproblem';
-$string['pluginnameadding'] = 'Adding a Parsons Problem question';
-$string['pluginnameediting'] = 'Editing a Parsons Problem question';
+$string['pluginnameadding'] = 'Adding a Parsons Problem question.';
+$string['pluginnameediting'] = 'Editing a Parsons Problem question.';
 $string['pluginname_help'] = 'Create a Parsons Problem question.';
+$string['formcodefield'] = 'Insert the code to be fragmented into a Parsons Problem question.';
+$string['formcodedelimiter'] = 'Insert code delimiter used to separate each code fragment, if not-specified/empty the default will be a new line.';
+$string['choicedelimiterheader'] = 'Visually paired distractors delimiter';
+$string['choicedelimiter'] =  'Insert delimiters used to create a visually paired distractor, the first choice will always be the correct one.';
+$string['choicedelimiter_help'] = 'For example if you would input ",", the code "print("Hello World"),print Hello World" would be a visually paired distractor where the first choice print("Hello World") is the correct answer.';
+$string['distractorsheader'] = 'Distractors';
+$string['distractors'] = 'Insert distractors separated by your choice of distractors delimiter.';
+$string['distractors_help'] = 'If empty, no distractor code fragment will be added';
+$string['formdistractorsdelimiter'] = 'Insert distractors delimiter.';

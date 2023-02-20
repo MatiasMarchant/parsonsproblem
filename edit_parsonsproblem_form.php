@@ -33,6 +33,46 @@ defined('MOODLE_INTERNAL') || die();
 class qtype_parsonsproblem_edit_form extends question_edit_form {
 
     /**
+     * Add any question-type specific form fields.
+     *
+     * @param object $mform the form being built.
+     */
+    protected function definition_inner($mform)
+    {
+        $textareaattributes = array (
+            'rows' => '10',
+            'style' => 'display:flex;flex:1',
+        );
+        $textattributes = array (
+            'size' => '70',
+            'rows' => '1',
+        );
+
+        $mform->addElement('textarea', 'code',
+                get_string('formcodefield', 'qtype_parsonsproblem'), $textareaattributes);
+        $mform->addElement('text', 'codedelimiter',
+                get_string('formcodedelimiter', 'qtype_parsonsproblem'), $textattributes);
+        $mform->setType('codedelimiter', PARAM_RAW);
+
+        $mform->addElement('header', 'choicedelimiterheader',
+                get_string('choicedelimiterheader', 'qtype_parsonsproblem'));
+        $mform->addElement('text', 'choicedelimiter',
+                get_string('choicedelimiter', 'qtype_parsonsproblem'), $textattributes);
+        $mform->addHelpButton('choicedelimiter', 'choicedelimiter', 'qtype_parsonsproblem');
+        $mform->setType('choicedelimiter', PARAM_RAW);
+
+        $mform->addElement('header', 'distractorsheader',
+                get_string('distractorsheader', 'qtype_parsonsproblem'));
+        $mform->addElement('text', 'distractorsdelimiter',
+                get_string('formdistractorsdelimiter', 'qtype_parsonsproblem'), $textattributes);
+        $mform->setType('distractorsdelimiter', PARAM_RAW);
+        $mform->addElement('text', 'distractors',
+                get_string('distractors', 'qtype_parsonsproblem'), $textattributes);
+        $mform->addHelpButton('distractors', 'distractors', 'qtype_parsonsproblem');
+        $mform->setType('distractors', PARAM_RAW);
+    }
+
+    /**
      * Returns the question type name.
      *
      * @return string The question type name.

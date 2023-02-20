@@ -39,4 +39,17 @@ class qtype_parsonsproblem extends question_type {
     // Override functions as necessary from the parent class located at
     // /question/type/questiontype.php.
 
+    /**
+     * If your question type has a table that extends the question table, and
+     * you want the base class to automatically save, backup and restore the extra fields,
+     * override this method to return an array wherer the first element is the table name,
+     * and the subsequent entries are the column names (apart from id and questionid).
+     *
+     * @return mixed array as above, or null to tell the base class to do nothing.
+     */
+    public function extra_question_fields()
+    {
+        return array('qtype_parsonsproblem', 'code', 'codedelimiter', 'choicedelimiter', 'distractors', 'distractorsdelimiter');
+    }
+
 }
