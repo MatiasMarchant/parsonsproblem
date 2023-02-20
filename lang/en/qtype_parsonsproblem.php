@@ -26,3 +26,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['pluginname'] = 'Parsons Problem question type';
+$string['pluginnamesummary'] = 'A question type where the student has to select, order, and indent code fragments.';
+$string['pluginname_link'] = 'question/type/parsonsproblem';
+$string['pluginnameadding'] = 'Adding a Parsons Problem question';
+$string['pluginnameediting'] = 'Editing a Parsons Problem question';
+$string['pluginname_help'] = 'Create a Parsons Problem question.';
