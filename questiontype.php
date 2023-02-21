@@ -52,4 +52,90 @@ class qtype_parsonsproblem extends question_type {
         return array('qtype_parsonsproblem', 'code', 'codedelimiter', 'choicedelimiter', 'distractors', 'distractorsdelimiter');
     }
 
+    /**
+     * Saves question-type specific options
+     *
+     * This is called by {@link save_question()} to save the question-type specific data
+     * @return object $result->error or $result->notice
+     * @param object $question  This holds the information from the editing form,
+     *      it is not a standard question object.
+     */
+    public function save_question_options($question) {
+        parent::save_question_options($question);
+        $this->save_question_answers($question);
+    }
+
+    /**
+     * Save the answers, with any extra data.
+     *
+     * Questions that use answers will call it from {@link save_question_options()}.
+     * @param object $question  This holds the information from the editing form,
+     *      it is not a standard question object.
+     * @return object $result->error or $result->notice
+     */
+    public function save_question_answers($question)
+    {
+        global $DB;
+
+        // As this function gets called when saving a new question and when editing an existing question
+        // one must consider both cases
+        $context = $question->context;
+        $oldanswers = $DB->get_records('question_answers', array('question' => $question->id), 'id ASC');
+
+        $unprocessed = $question->code;
+        if(empty($question->codedelimiter)) {
+            $processed = preg_split("/\\r\\n|\\r|\\n/", $unprocessed);
+        } else {
+            $processed = explode($question->codedelimiter , $unprocessed);
+        }
+
+        if(!empty($question->choicedelimiter)) {
+            $processed = $this->remove_choices($processed, $question->choicedelimiter);
+        }
+
+        // Insert all the new answers
+        foreach ($processed as $fragment) {
+            // Update an existing answer if possible.
+            if($answer = array_shift($oldanswers)) {
+                $answer->question = $question->id;
+                $answer->answer = $fragment;
+                $answer->feedback = '';
+                $answer->fraction = 1.0;
+                $DB->update_record('question_answers', $answer);
+            } else {
+                $answer = new stdClass();
+                $answer->question = $question->id;
+                $answer->answer = $fragment;
+                $answer->feedback = '';
+                $answer->fraction = 1.0;
+                $answer->id = $DB->insert_record('question_answers', $answer);
+            }
+        }
+
+        // Delete any left over old answer records.
+        $fs = get_file_storage();
+        foreach ($oldanswers as $oldanswer) {
+            $fs->delete_area_files($context->id, 'question', 'answerfeedback', $oldanswer->id);
+            $DB->delete_records('question_answers', array('id' => $oldanswer->id));
+        }
+
+    }
+
+    /**
+     * Cleans final answer removing incorrect choices in every fragment of code
+     * when using visually paired choices
+     * @param array $processed  Each fragment of code including incorrect choices
+     * @param string $choicedelimiter  Separator string that separates each choice
+     *
+     * @return array $codefragments  Each correct fragment of code
+     */
+    public function remove_choices($processed, $choicedelimiter)
+    {
+        $codefragments = array();
+        foreach ($processed as $possiblefragment) {
+            $fragment = explode($choicedelimiter, $possiblefragment);
+            array_push($codefragments, array_shift($fragment));
+        }
+        return $codefragments;
+    }
 }
