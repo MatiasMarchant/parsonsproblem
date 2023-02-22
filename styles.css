@@ -1,0 +1,75 @@
+.parsons.sortable-container {
+    display: flex;
+    gap: 10px;
+}
+.parsons.sortable-column-right {
+    width: 50%;
+    background-color: #ffa;
+    margin-left: 0;
+    border: 1px solid #efefff;
+    padding: 5px;
+}
+
+.parsons.sortable-column-left {
+    width: 50%;
+    background-color: #dfdfdf;
+    margin-left: 0;
+    border: 1px solid #efefff;
+    padding: 5px;
+}
+.parsons.sortable-item {
+    background-color: #efefef;
+    border: 1px solid #d3d3d3;
+    margin-top: 5px;
+    padding: 10px;
+    border-radius: 10px;
+    cursor: move;
+    font-family: monospace;
+    font-size: 120%;
+    white-space: break-spaces;
+}
+
+.parsons.sortable-choice-parent {
+    background-color: #cacaca;
+    border: 1px solid #d3d3d3;
+    margin-top: 5px;
+    padding: 5px;
+    border-radius: 10px;
+    cursor: move;
+    font-family: monospace;
+    font-size: 120%;
+    white-space: break-spaces;
+}
+
+.parsons.sortable-choice-parent .sortable-choice {
+    background-color: #efefef;
+    border: 1.5px solid #d3d3d3;
+    border-radius: 10px;
+    font-size: 100%;
+    cursor: default;
+    margin-top: 5px;
+    padding: 10px;
+}
+
+.parsons.sortable-choice-parent .sortable-choice.chosen-choice {
+    background-color: #a3e2f0;
+    border-color: #000;
+}
+
+.parsons.sortable-item.parsons-feedback {
+    cursor: auto;
+}
+
+.parsons.sortable-item.parsons-feedback.correct {
+    background-color: #dff4d8; /* light green */
+    border-color: #9f6; /* gentle green */
+}
+
+.parsons.sortable-item.parsons-feedback.incorrect {
+    background-color: #fdd; /* light red */
+    border-color: #ff7373; /* gentle red */
+}
+
+ol li.parsons-feedback {
+    white-space: break-spaces;
+}

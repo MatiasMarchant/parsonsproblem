@@ -40,3 +40,5 @@ $string['distractorsheader'] = 'Distractors';
 $string['distractors'] = 'Insert distractors separated by your choice of distractors delimiter.';
 $string['distractors_help'] = 'If empty, no distractor code fragment will be added';
 $string['formdistractorsdelimiter'] = 'Insert distractors delimiter.';
+$string['mustconsider'] = 'Must consider';
+$string['nonallowedcodedelimiter'] = 'Internally this question type uses the characters \'|/\' and \'\\r\\n\' as delimiters, so you shouldn\'t use them. Also each indentation is considered as 4 white spaces, if you consider any indentation not a multiple of 4 spaces then this question won\'t work';

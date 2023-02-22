@@ -48,6 +48,10 @@ class qtype_parsonsproblem_edit_form extends question_edit_form {
             'rows' => '1',
         );
 
+        $mform->addElement('static', 'must consider',
+                get_string('mustconsider', 'qtype_parsonsproblem'),
+                get_string('nonallowedcodedelimiter', 'qtype_parsonsproblem'));
+
         $mform->addElement('textarea', 'code',
                 get_string('formcodefield', 'qtype_parsonsproblem'), $textareaattributes);
         $mform->addElement('text', 'codedelimiter',

@@ -34,13 +34,30 @@ defined('MOODLE_INTERNAL') || die();
  */
 class qtype_parsonsproblem_question extends question_graded_automatically {
 
+
+    /** @var array dragItem order with indentation spaces */
+    public $order = null;
+
+    /** @var array of question_answer. */
+    public $answers;
+
+    /**
+     * its a whole number, it's only called fraction because it is referred to that in core
+     * code
+     * @var int
+     */
+    public $fraction;
+
+
     /**
      * Returns data to be included in the form submission.
      *
      * @return array|string.
      */
     public function get_expected_data() {
-        return array();
+        $name = $this->get_response_fieldname();
+        $data = array($name => PARAM_TEXT);
+        return $data;
     }
 
     /**
@@ -49,7 +66,10 @@ class qtype_parsonsproblem_question extends question_graded_automatically {
      * @return array|null Null if it is not possible to compute a correct response.
      */
     public function get_correct_response() {
-        return null;
+        $str = implode(empty($this->codedelimiter) ? '|/' : $this->codedelimiter, array_map(function($c) {
+            return $c->answer;
+        }, $this->get_parsonsproblem_answers()));
+        return array($this->get_response_fieldname() => $str);
     }
 
     /**
@@ -90,12 +110,11 @@ class qtype_parsonsproblem_question extends question_graded_automatically {
      */
     public function summarise_response(array $response)
     {
-        // if (isset($response[$this->get_response_fieldname()])) {
-        //     return $response[$this->get_response_fieldname()];
-        // } else {
-        //     return null;
-        // }
-        return "";
+        if (isset($response[$this->get_response_fieldname()])) {
+            return $response[$this->get_response_fieldname()];
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -120,8 +139,115 @@ class qtype_parsonsproblem_question extends question_graded_automatically {
      */
     public function grade_response(array $response)
     {
-        $grade = array(1, question_state::graded_state_for_fraction(1));
+        $counter = 0;
+        $right = 0;
+        $responsefieldname = $this->get_response_fieldname();
+        $studentanswer = explode('|/', $response[$responsefieldname]);
+        $correctanswer = explode(empty($this->codedelimiter) ? '|/' : $this->codedelimiter, $this->get_correct_response()[$responsefieldname]);
+        foreach ($studentanswer as $index => $lineofcode) {
+            if (isset($correctanswer[$index])) {
+                if ($lineofcode == $correctanswer[$index]) { $right++; }
+            }
+            $counter++;
+        }
+        $this->fraction = $right / $counter;
+        $grade = array($this->fraction, question_state::graded_state_for_fraction($this->fraction));
         return $grade;
+    }
+
+    /**
+     * Start a new attempt at this question, storing any information that will
+     * be needed later in the step.
+     *
+     * This is where the question can do any initialisation required on a
+     * per-attempt basis. For example, this is where the multiple choice
+     * question type randomly shuffles the choices (if that option is set).
+     *
+     * Any information about how the question has been set up for this attempt
+     * should be stored in the $step, by calling $step->set_qt_var(...).
+     *
+     * @param question_attempt_step The first step of the {@link question_attempt}
+     *      being started. Can be used to store state.
+     * @param int $varant which variant of this question to start. Will be between
+     *      1 and {@link get_num_variants()} inclusive.
+     */
+    public function start_attempt(question_attempt_step $step, $variant)
+    {
+        if($this->codedelimiterexists()) {
+            $order = explode($this->codedelimiter , $this->code);
+            $order = $this->shuffle_visually_paired($order);
+            shuffle($order);
+            $step->set_qt_var('_order', implode($this->codedelimiter, $order));
+        } else {
+            $order = preg_split("/\\r\\n|\\r|\\n/", $this->code);
+            $order = $this->shuffle_visually_paired($order);
+            shuffle($order);
+            $step->set_qt_var('_order', implode('|/', $order));
+        }
+    }
+
+    protected function init_order(question_attempt $qa)
+    {
+        if (is_null($this->order)) {
+            $this->order = explode($this->codedelimiterexists() ? $this->codedelimiter : '|/', $qa->get_step(0)->get_qt_var('_order'));
+        }
+    }
+
+    public function get_order(question_attempt $qa)
+    {
+        $this->init_order($qa);
+        return $this->order;
+    }
+
+    public function get_order_indentationless(question_attempt $qa)
+    {
+        return array_map(function($codeFragment) {
+            if (preg_match("/\\r\\n|\\r|\\n/", $codeFragment)) {
+                $codeFragmentBlock = preg_split("/\\r\\n|\\r|\\n/", $codeFragment);
+                $counter = 0;
+                $aux_array = array();
+                foreach ($codeFragmentBlock as $line) {
+                    foreach (mb_str_split($line) as $char) {
+                        if ($char == ' ') {
+                            if (isset($aux_array[$counter])) {
+                                $aux_array[$counter]++;
+                            } else {
+                                $aux_array[$counter] = 1;
+                            }
+                        } else {
+                            break;
+                        }
+                    }
+                    $counter++;
+                }
+                $min = min($aux_array);
+                foreach ($codeFragmentBlock as $index => $line) {
+                    $codeFragmentBlock[$index] = substr($line, $min);
+                }
+                return implode(PHP_EOL, $codeFragmentBlock);
+            }
+            return ltrim($codeFragment);
+        }, $this->get_order($qa));
+    }
+
+    /**
+     * Loads from DB and returns array of answers objects
+     *
+     * @return array of objects
+     */
+    public function get_parsonsproblem_answers() {
+        global $DB;
+        if ($this->answers === null) {
+            $this->answers = $DB->get_records('question_answers', array('question' => $this->id), 'id ASC');
+            if ($this->answers) {
+                foreach ($this->answers as $answerid => $answer) {
+                    $this->answers[$answerid] = $answer;
+                }
+            } else {
+                $this->answers = array();
+            }
+        }
+        return $this->answers;
     }
 
     /**
@@ -137,5 +263,45 @@ class qtype_parsonsproblem_question extends question_graded_automatically {
      */
     public function check_file_access($qa, $options, $component, $filearea, $args, $forcedownload) {
         return parent::check_file_access($qa, $options, $component, $filearea, $args, $forcedownload);
+    }
+
+    /**
+     * Returns response mform field name
+     *
+     * @return string
+     */
+    public function get_response_fieldname() {
+        return 'parsons-response_'.$this->id;
+    }
+
+    /**
+     * Returns if choice delimiter was set when creating the question
+     *
+     * @return bool
+     */
+    public function choicedelimiterexists() {
+        return !empty($this->choicedelimiter);
+    }
+
+    /**
+     * Returns if code delimiter was set when creating the question
+     *
+     * @return bool
+     */
+    public function codedelimiterexists() {
+        return !empty($this->codedelimiter);
+    }
+
+    public function shuffle_visually_paired($order) {
+        if($this->choicedelimiterexists()) {
+            foreach ($order as $index => $codeFragment) {
+                if (strpos($codeFragment, $this->choicedelimiter)) {
+                    $unshuffled = explode($this->choicedelimiter, $codeFragment);
+                    shuffle($unshuffled);
+                    $order[$index] = implode($this->choicedelimiter, $unshuffled);
+                }
+            }
+        }
+        return $order;
     }
 }

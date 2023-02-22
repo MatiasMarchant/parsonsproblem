@@ -43,7 +43,61 @@ class qtype_parsonsproblem_renderer extends qtype_renderer {
      * @return string HTML fragment.
      */
     public function formulation_and_controls(question_attempt $qa, question_display_options $options) {
-        return parent::formulation_and_controls($qa, $options);
+        global $PAGE;
+        $question = $qa->get_question();
+        $output = "";
+        $output .= html_writer::empty_tag('div', array('class' => 'parsons sortable-container'));
+        $output .= html_writer::start_div('parsons sortable-column-left', array('id' => 'column' . $question->id . '0'));
+        $order = $question->get_order_indentationless($qa);
+        $rowAmount = 0;
+        foreach ($order as $index => $codefragment) {
+            $inputname = 'line' . $rowAmount . '_' . $question->id;
+            $inputattributes = array(
+                'id' => $inputname,
+                'class' => 'parsons sortable-item',
+            );
+            if (!empty($question->choicedelimiter) && strpos($codefragment, $question->choicedelimiter)) {
+                $inputattributes['class'] = 'parsons sortable-choice-parent';
+                $output .= html_writer::start_div('', $inputattributes);
+
+                // Hacer html writer de la weaita
+                $choices = explode($question->choicedelimiter, $codefragment);
+                $choicecounter = 0;
+                foreach ($choices as $choice) {
+                    $inputattributeschoice = array(
+                        'id' => $inputname . '_' . $choicecounter,
+                        'class' => 'sortable-choice',
+                    );
+                    $output .= html_writer::tag('div', $choice, $inputattributeschoice);
+                    $choicecounter++;
+                }
+
+                $output .= html_writer::end_div();
+            } else {
+                $output .= html_writer::tag('div', $codefragment, $inputattributes);
+            }
+            $rowAmount++;
+        }
+        $output .= html_writer::end_div();
+        $output .= html_writer::start_div('parsons sortable-column-right', array('id' => 'column' . $question->id . '1'));
+        $output .= html_writer::end_div();
+        $output .= html_writer::end_tag('div');
+
+        // FALTA PRINTEAR DISTRACTORES!! SI ESQ HAY
+
+        $responsename = $question->get_response_fieldname();
+        $answerid = $qa->get_qt_field_name($responsename);
+        $initialValue = "";
+        $output .= html_writer::empty_tag(
+            'input', array('type' => 'hidden',
+            'name' => $answerid,
+            'id' => $answerid,
+            'value' => $initialValue,
+            )
+            );
+
+        $PAGE->requires->js_call_amd('qtype_parsonsproblem/draganddropcodefragments', 'init', array($question->id, $answerid));
+        return parent::formulation_and_controls($qa, $options) . $output;
     }
 
     /**
