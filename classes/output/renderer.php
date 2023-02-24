@@ -49,8 +49,11 @@ class qtype_parsonsproblem_renderer extends qtype_renderer {
         $output .= html_writer::empty_tag('div', array('class' => 'parsons sortable-container'));
         $output .= html_writer::start_div('parsons sortable-column-left', array('id' => 'column' . $question->id . '0'));
         $order = $question->get_order_indentationless($qa);
+        $distractors = $question->get_distractors();
+        $order = array_merge($order, $distractors);
+        shuffle($order);
         $rowAmount = 0;
-        foreach ($order as $index => $codefragment) {
+        foreach ($order as $codefragment) {
             $inputname = 'line' . $rowAmount . '_' . $question->id;
             $inputattributes = array(
                 'id' => $inputname,
@@ -82,8 +85,6 @@ class qtype_parsonsproblem_renderer extends qtype_renderer {
         $output .= html_writer::start_div('parsons sortable-column-right', array('id' => 'column' . $question->id . '1'));
         $output .= html_writer::end_div();
         $output .= html_writer::end_tag('div');
-
-        // FALTA PRINTEAR DISTRACTORES!! SI ESQ HAY
 
         $responsename = $question->get_response_fieldname();
         $answerid = $qa->get_qt_field_name($responsename);

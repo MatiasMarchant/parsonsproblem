@@ -292,6 +292,10 @@ class qtype_parsonsproblem_question extends question_graded_automatically {
         return !empty($this->codedelimiter);
     }
 
+    public function distractorsdelimiterexists() {
+        return !empty($this->distractorsdelimiter);
+    }
+
     public function shuffle_visually_paired($order) {
         if($this->choicedelimiterexists()) {
             foreach ($order as $index => $codeFragment) {
@@ -303,5 +307,13 @@ class qtype_parsonsproblem_question extends question_graded_automatically {
             }
         }
         return $order;
+    }
+
+    public function get_distractors() {
+        $distractors = array();
+        if($this->distractorsdelimiterexists()) {
+            $distractors = explode($this->distractorsdelimiter,  $this->distractors);
+        }
+        return $distractors;
     }
 }
