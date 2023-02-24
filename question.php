@@ -201,33 +201,41 @@ class qtype_parsonsproblem_question extends question_graded_automatically {
 
     public function get_order_indentationless(question_attempt $qa)
     {
+        return $this->trim_array_min_left_whitespaces($this->get_order($qa));
+    }
+
+    public function trim_array_min_left_whitespaces($codeFragments) {
         return array_map(function($codeFragment) {
-            if (preg_match("/\\r\\n|\\r|\\n/", $codeFragment)) {
-                $codeFragmentBlock = preg_split("/\\r\\n|\\r|\\n/", $codeFragment);
-                $counter = 0;
-                $aux_array = array();
-                foreach ($codeFragmentBlock as $line) {
-                    foreach (mb_str_split($line) as $char) {
-                        if ($char == ' ') {
-                            if (isset($aux_array[$counter])) {
-                                $aux_array[$counter]++;
-                            } else {
-                                $aux_array[$counter] = 1;
-                            }
+            return $this->trim_string_min_left_whitespaces($codeFragment);
+        }, $codeFragments);
+    }
+
+    public function trim_string_min_left_whitespaces($codeFragment) {
+        if (preg_match("/\\r\\n|\\r|\\n/", $codeFragment)) {
+            $codeFragmentBlock = preg_split("/\\r\\n|\\r|\\n/", $codeFragment);
+            $counter = 0;
+            $aux_array = array();
+            foreach ($codeFragmentBlock as $line) {
+                foreach (mb_str_split($line) as $char) {
+                    if ($char == ' ') {
+                        if (isset($aux_array[$counter])) {
+                            $aux_array[$counter]++;
                         } else {
-                            break;
+                            $aux_array[$counter] = 1;
                         }
+                    } else {
+                        break;
                     }
-                    $counter++;
                 }
-                $min = min($aux_array);
-                foreach ($codeFragmentBlock as $index => $line) {
-                    $codeFragmentBlock[$index] = substr($line, $min);
-                }
-                return implode(PHP_EOL, $codeFragmentBlock);
+                $counter++;
             }
-            return ltrim($codeFragment);
-        }, $this->get_order($qa));
+            $min = min($aux_array);
+            foreach ($codeFragmentBlock as $index => $line) {
+                $codeFragmentBlock[$index] = substr($line, $min);
+            }
+            return implode(PHP_EOL, $codeFragmentBlock);
+        }
+        return ltrim($codeFragment);
     }
 
     /**

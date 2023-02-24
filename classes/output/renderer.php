@@ -45,6 +45,11 @@ class qtype_parsonsproblem_renderer extends qtype_renderer {
     public function formulation_and_controls(question_attempt $qa, question_display_options $options) {
         global $PAGE;
         $question = $qa->get_question();
+        // When previewing after a quiz is complete
+        if($options->readonly) {
+            $output = $this->students_answer_render($question, $qa->get_response_summary(), $qa->get_right_answer_summary());
+            return parent::formulation_and_controls($qa, $options) . $output;
+        }
         $output = "";
         $output .= html_writer::empty_tag('div', array('class' => 'parsons sortable-container'));
         $output .= html_writer::start_div('parsons sortable-column-left', array('id' => 'column' . $question->id . '0'));
@@ -122,7 +127,53 @@ class qtype_parsonsproblem_renderer extends qtype_renderer {
      * @return string HTML fragment.
      */
     protected function correct_response(question_attempt $qa) {
-        return parent::correct_response($qa);
+        $question = $qa->get_question();
+        $output = "";
+        $output .= html_writer::tag('p', get_string('correctorder', 'qtype_parsonsproblem'));
+        $output .= html_writer::start_tag('ol');
+        $rightanswer = $qa->get_right_answer_summary();
+        $rightanswer = $question->codedelimiterexists() ? explode($question->codedelimiter, $rightanswer) :  explode("|/", $rightanswer);
+        foreach ($rightanswer as $lineofcode) {
+            $output .= html_writer::tag('li', $lineofcode, array('class' => 'parsons-feedback'));
+        }
+        $output .= html_writer::end_tag('ol');
+        return parent::correct_response($qa) . html_writer::empty_tag('br') . $output;
+    }
+
+    public function students_answer_render($question, $responsesummary, $rightanswer) {
+        $output = "";
+        $responsesummary = explode("|/", $responsesummary);
+        $rightanswer = $question->codedelimiterexists() ? explode($question->codedelimiter, $rightanswer) : explode("|/", $rightanswer);
+        $correctlines = $this->get_correct_lines_array($responsesummary, $rightanswer);
+        $output .= html_writer::empty_tag('div', array('class' => 'parsons sortable-container'));
+        $output .= html_writer::start_div('parsons sortable-column-feedback');
+        foreach ($responsesummary as $index => $answer) {
+            $indentations = strlen($answer) - strlen(ltrim($answer));
+            if (isset($correctlines[$index])) {
+                $status = $correctlines[$index] ? (' correct') : (' incorrect');
+            } else {
+                $status = (' incorrect');
+            }
+            $inputattributes = array(
+                'class' => 'parsons sortable-item parsons-feedback' . $status,
+                'style' => 'margin-left:' . strval(($indentations/4) * 50) . 'px',
+            );
+            // ltrim $answer
+            $output .= html_writer::tag('div', $question->trim_string_min_left_whitespaces($answer), $inputattributes);
+        }
+        $output .= html_writer::end_div() . html_writer::end_tag('div');
+        return $output;
+    }
+
+    public function get_correct_lines_array($responsesummary, $rightanswer) {
+        $correctlinesarray = array();
+        foreach ($responsesummary as $index => $lineofcode) {
+            if (isset($rightanswer[$index])) {
+                if ($lineofcode == $rightanswer[$index]) { $correctlinesarray[$index] = true; }
+                else { $correctlinesarray[$index] = false; }
+            }
+        }
+        return $correctlinesarray;
     }
 
 }
