@@ -150,7 +150,8 @@ class qtype_parsonsproblem_question extends question_graded_automatically {
             }
             $counter++;
         }
-        $this->fraction = $right / $counter;
+
+        $this->fraction = $right / max($counter, count($correctanswer));
         $grade = array($this->fraction, question_state::graded_state_for_fraction($this->fraction));
         return $grade;
     }
