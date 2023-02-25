@@ -63,7 +63,6 @@ export const init = (questionid, answerid) => {
      */
     function dragStart(e) {
         initX = e.clientX;
-        this.style.pointerEvents = "none";
         dragItem = this;
     }
 
@@ -72,7 +71,6 @@ export const init = (questionid, answerid) => {
      */
     function dragEnd() {
         dragItem = null;
-        this.style.pointerEvents = "all";
         updateAnswer();
     }
 
@@ -150,7 +148,6 @@ export const init = (questionid, answerid) => {
      * @param {*} e - Click event that triggers item drag.
      */
     function dragEnterColumn(e) {
-        e.preventDefault();
         enteringColumn = this;
         if (leavingColumn !== null && leavingColumn !== enteringColumn) { // Esto quiere decir que se salió de una col y entró a otr
             if (this.isSameNode(leftColumn)) {
@@ -174,8 +171,7 @@ export const init = (questionid, answerid) => {
      * It sets the variable leavingColumn to the column that has a codeFragment leaving.
      * @param {*} e - Click event that triggers item drag.
      */
-    function dragLeaveColumn(e) {
-        e.preventDefault();
+    function dragLeaveColumn() {
         leavingColumn = this;
     }
 
