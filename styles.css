@@ -42,7 +42,7 @@
 }
 
 .parsons.sortable-choice-parent {
-    background-color: #cacaca;
+    background-color: #3066be; /* Magenta Dye #D30C7B */ /* Light coral #EF6F6C */ /* Raspberry #D81159 */
     border: 1px solid #d3d3d3;
     margin-top: 5px;
     padding: 5px;
@@ -64,8 +64,9 @@
 }
 
 .parsons.sortable-choice-parent .sortable-choice.chosen-choice {
-    background-color: #a3e2f0;
+    background-color: #2ca58d;
     border-color: #000;
+    color: white;
 }
 
 .parsons.sortable-item.parsons-feedback {

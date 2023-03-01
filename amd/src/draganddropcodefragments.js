@@ -10,7 +10,6 @@ export const init = (questionid, answerid) => {
     let rightColumn = document.getElementById('column' + questionid + '1');
     let answerObject = document.getElementById(answerid);
 
-    leftColumn.addEventListener('dragover', dragOverColumn);
     leftColumn.addEventListener('dragenter', dragEnterColumn);
     leftColumn.addEventListener('dragleave', dragLeaveColumn);
     rightColumn.addEventListener('dragover', dragOverColumn);
