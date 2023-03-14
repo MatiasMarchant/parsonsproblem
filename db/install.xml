@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="question/type/parsonsproblem/db" VERSION="20230220" COMMENT="XMLDB file for Moodle question/type/parsonsproblem"
+<XMLDB PATH="question/type/parsonsproblem/db" VERSION="20230314" COMMENT="XMLDB file for Moodle question/type/parsonsproblem"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../../lib/xmldb/xmldb.xsd"
 >
@@ -9,6 +9,8 @@
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="questionid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Link between questionid field from mdl_question table and qtype_parsonsproblem table"/>
         <FIELD NAME="code" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Code to be fragmented to create a Parsons Problem question"/>
+        <FIELD NAME="choicedelimiterm" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="User-defined delimiter for when a choice must be made between code fragments."/>
+        <FIELD NAME="choicedelimiterr" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="User-defined delimiter for when a choice must be made between code fragments."/>
         <FIELD NAME="codedelimiter" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="User-defined code delimiter"/>
         <FIELD NAME="choicedelimiter" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="User-defined delimiter for when a choice must be made between two code fragments."/>
         <FIELD NAME="distractors" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Code fragments that work as distractors"/>

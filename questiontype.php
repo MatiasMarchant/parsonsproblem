@@ -49,7 +49,7 @@ class qtype_parsonsproblem extends question_type {
      */
     public function extra_question_fields()
     {
-        return array('qtype_parsonsproblem', 'code', 'codedelimiter', 'choicedelimiter', 'distractors', 'distractorsdelimiter');
+        return array('qtype_parsonsproblem', 'code', 'codedelimiter', 'choicedelimiter', 'distractors', 'distractorsdelimiter', 'choicedelimiterm', 'choicedelimiterr');
     }
 
     /**

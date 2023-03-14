@@ -52,12 +52,14 @@ class qtype_parsonsproblem_edit_form extends question_edit_form {
                 get_string('mustconsider', 'qtype_parsonsproblem'),
                 get_string('nonallowedcodedelimiter', 'qtype_parsonsproblem'));
 
+        // Code & Code delimiter
         $mform->addElement('textarea', 'code',
                 get_string('formcodefield', 'qtype_parsonsproblem'), $textareaattributes);
         $mform->addElement('text', 'codedelimiter',
                 get_string('formcodedelimiter', 'qtype_parsonsproblem'), $textattributes);
         $mform->setType('codedelimiter', PARAM_RAW);
 
+        // Visually paired distractors
         $mform->addElement('header', 'choicedelimiterheader',
                 get_string('choicedelimiterheader', 'qtype_parsonsproblem'));
         $mform->addElement('text', 'choicedelimiter',
@@ -65,6 +67,18 @@ class qtype_parsonsproblem_edit_form extends question_edit_form {
         $mform->addHelpButton('choicedelimiter', 'choicedelimiter', 'qtype_parsonsproblem');
         $mform->setType('choicedelimiter', PARAM_RAW);
 
+        $mform->addElement('text', 'choicedelimiterm',
+                get_string('choicedelimiterm', 'qtype_parsonsproblem'), $textattributes);
+        $mform->addHelpButton('choicedelimiterm', 'choicedelimiterm', 'qtype_parsonsproblem');
+        $mform->setType('choicedelimiterm', PARAM_RAW);
+
+        $mform->addElement('text', 'choicedelimiterr',
+                get_string('choicedelimiterr', 'qtype_parsonsproblem'), $textattributes);
+        $mform->addHelpButton('choicedelimiterr', 'choicedelimiterr', 'qtype_parsonsproblem');
+        $mform->setType('choicedelimiterr', PARAM_RAW);
+
+
+        // Distractors
         $mform->addElement('header', 'distractorsheader',
                 get_string('distractorsheader', 'qtype_parsonsproblem'));
         $mform->addElement('text', 'distractorsdelimiter',
