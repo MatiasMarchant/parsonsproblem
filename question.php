@@ -289,7 +289,7 @@ class qtype_parsonsproblem_question extends question_graded_automatically {
      * @return bool
      */
     public function choicedelimiterexists() {
-        return !empty($this->choicedelimiter);
+        return !empty($this->choicedelimiter) && !empty($this->choicedelimiterm) && !empty($this->choicedelimiterr);
     }
 
     /**
@@ -308,10 +308,14 @@ class qtype_parsonsproblem_question extends question_graded_automatically {
     public function shuffle_visually_paired($order) {
         if($this->choicedelimiterexists()) {
             foreach ($order as $index => $codeFragment) {
-                if (strpos($codeFragment, $this->choicedelimiter)) {
-                    $unshuffled = explode($this->choicedelimiter, $codeFragment);
+                if (strpos($codeFragment, $this->choicedelimiter) !== false) {
+                    // Trim left and right choice delimiter
+                    $ltrimmed = ltrim(ltrim($codeFragment), $this->choicedelimiter);
+                    $randltrimmed = rtrim($ltrimmed, $this->choicedelimiterr);
+                    $unshuffled = explode($this->choicedelimiterm, $randltrimmed);
                     shuffle($unshuffled);
-                    $order[$index] = implode($this->choicedelimiter, $unshuffled);
+                    $withdelimiters = $this->choicedelimiter . implode($this->choicedelimiterm, $unshuffled) . $this->choicedelimiterr;
+                    $order[$index] = $withdelimiters;
                 }
             }
         }

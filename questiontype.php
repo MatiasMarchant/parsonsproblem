@@ -90,7 +90,7 @@ class qtype_parsonsproblem extends question_type {
         }
 
         if(!empty($question->choicedelimiter)) {
-            $processed = $this->remove_choices($processed, $question->choicedelimiter);
+            $processed = $this->remove_choices($processed, $question->choicedelimiter, $question->choicedelimiterm, $question->choicedelimiterr);
         }
 
         // Insert all the new answers
@@ -129,12 +129,23 @@ class qtype_parsonsproblem extends question_type {
      *
      * @return array $codefragments  Each correct fragment of code
      */
-    public function remove_choices($processed, $choicedelimiter)
+    public function remove_choices($processed, $choicedelimiterl, $choicedelimiterm, $choicedelimiterr)
     {
         $codefragments = array();
         foreach ($processed as $possiblefragment) {
-            $fragment = explode($choicedelimiter, $possiblefragment);
-            array_push($codefragments, array_shift($fragment));
+            if(strpos($possiblefragment, $choicedelimiterl) !== false) {
+                $whitespaces = strpos($possiblefragment, $choicedelimiterl);
+                if($whitespaces > 0) {
+                    $possiblefragment = ltrim($possiblefragment);
+                }
+                $possiblefragment = ltrim($possiblefragment, $choicedelimiterl);
+                $possiblefragment = str_repeat(' ', $whitespaces) . $possiblefragment;
+                $possiblefragment = rtrim($possiblefragment, $choicedelimiterr);
+                $possiblefragment = explode($choicedelimiterm, $possiblefragment);
+                array_push($codefragments, array_shift($possiblefragment));
+            } else {
+                array_push($codefragments, $possiblefragment);
+            }
         }
         return $codefragments;
     }

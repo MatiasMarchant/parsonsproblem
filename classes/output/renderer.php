@@ -64,12 +64,12 @@ class qtype_parsonsproblem_renderer extends qtype_renderer {
                 'id' => $inputname,
                 'class' => 'parsons sortable-item',
             );
-            if (!empty($question->choicedelimiter) && strpos($codefragment, $question->choicedelimiter)) {
+            if ($question->choicedelimiterexists() && strpos($codefragment, $question->choicedelimiter) !== false) {
                 $inputattributes['class'] = 'parsons sortable-choice-parent';
                 $output .= html_writer::start_div('', $inputattributes);
-
-                // Hacer html writer de la weaita
-                $choices = explode($question->choicedelimiter, $codefragment);
+                $codefragment = ltrim($codefragment, $question->choicedelimiter);
+                $codefragment = rtrim($codefragment, $question->choicedelimiterr);
+                $choices = explode($question->choicedelimiterm, $codefragment);
                 $choicecounter = 0;
                 foreach ($choices as $choice) {
                     $inputattributeschoice = array(
