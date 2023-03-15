@@ -228,6 +228,7 @@ class qtype_parsonsproblem_question extends question_graded_automatically {
                             $auxarray[$counter] = 1;
                         }
                     } else {
+                        $auxarray[$counter] = 0;
                         break;
                     }
                 }
