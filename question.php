@@ -81,8 +81,7 @@ class qtype_parsonsproblem_question extends question_graded_automatically {
      *      {@link question_attempt_step::get_qt_data()}.
      * @return bool whether this response is a complete answer to this question.
      */
-    public function is_complete_response(array $response)
-    {
+    public function is_complete_response(array $response) {
         return true;
     }
 
@@ -97,8 +96,7 @@ class qtype_parsonsproblem_question extends question_graded_automatically {
      * @return bool whether the two sets of responses are the same - that is
      *      whether the new set of responses can safely be discarded.
      */
-    public function is_same_response(array $prevresponse, array $newresponse)
-    {
+    public function is_same_response(array $prevresponse, array $newresponse) {
         return null;
     }
 
@@ -108,8 +106,7 @@ class qtype_parsonsproblem_question extends question_graded_automatically {
      * @param array $response a response, as might be passed to {@link grade_response()}.
      * @return string a plain text summary of that response, that could be used in reports.
      */
-    public function summarise_response(array $response)
-    {
+    public function summarise_response(array $response) {
         if (isset($response[$this->get_response_fieldname()])) {
             return $response[$this->get_response_fieldname()];
         } else {
@@ -123,8 +120,7 @@ class qtype_parsonsproblem_question extends question_graded_automatically {
      * @param array $response
      * @return string the message
      */
-    public function get_validation_error(array $response)
-    {
+    public function get_validation_error(array $response) {
         return null;
     }
 
@@ -137,16 +133,22 @@ class qtype_parsonsproblem_question extends question_graded_automatically {
      *      {@link question_attempt_step::get_qt_data()}.
      * @return array (float, integer) the fraction, and the state.
      */
-    public function grade_response(array $response)
-    {
+    public function grade_response(array $response) {
         $counter = 0;
         $right = 0;
         $responsefieldname = $this->get_response_fieldname();
         $studentanswer = explode('|/', $response[$responsefieldname]);
-        $correctanswer = explode(empty($this->codedelimiter) ? '|/' : $this->codedelimiter, $this->get_correct_response()[$responsefieldname]);
+        $correctanswer = explode(
+            empty($this->codedelimiter) ?
+                '|/'
+                :
+                $this->codedelimiter, $this->get_correct_response()[$responsefieldname]
+        );
         foreach ($studentanswer as $index => $lineofcode) {
             if (isset($correctanswer[$index])) {
-                if ($lineofcode == $correctanswer[$index]) { $right++; }
+                if ($lineofcode == $correctanswer[$index]) {
+                    $right++;
+                }
             }
             $counter++;
         }
@@ -172,9 +174,8 @@ class qtype_parsonsproblem_question extends question_graded_automatically {
      * @param int $varant which variant of this question to start. Will be between
      *      1 and {@link get_num_variants()} inclusive.
      */
-    public function start_attempt(question_attempt_step $step, $variant)
-    {
-        if($this->codedelimiterexists()) {
+    public function start_attempt(question_attempt_step $step, $variant) {
+        if ($this->codedelimiterexists()) {
             $order = explode($this->codedelimiter , $this->code);
             $order = $this->shuffle_visually_paired($order);
             shuffle($order);
@@ -187,42 +188,44 @@ class qtype_parsonsproblem_question extends question_graded_automatically {
         }
     }
 
-    protected function init_order(question_attempt $qa)
-    {
+    protected function init_order(question_attempt $qa) {
         if (is_null($this->order)) {
-            $this->order = explode($this->codedelimiterexists() ? $this->codedelimiter : '|/', $qa->get_step(0)->get_qt_var('_order'));
+            $this->order = explode(
+                $this->codedelimiterexists() ?
+                    $this->codedelimiter
+                    :
+                    '|/', $qa->get_step(0)->get_qt_var('_order')
+            );
         }
     }
 
-    public function get_order(question_attempt $qa)
-    {
+    public function get_order(question_attempt $qa) {
         $this->init_order($qa);
         return $this->order;
     }
 
-    public function get_order_indentationless(question_attempt $qa)
-    {
+    public function get_order_indentationless(question_attempt $qa) {
         return $this->trim_array_min_left_whitespaces($this->get_order($qa));
     }
 
-    public function trim_array_min_left_whitespaces($codeFragments) {
-        return array_map(function($codeFragment) {
-            return $this->trim_string_min_left_whitespaces($codeFragment);
-        }, $codeFragments);
+    public function trim_array_min_left_whitespaces($codefragments) {
+        return array_map(function($codefragment) {
+            return $this->trim_string_min_left_whitespaces($codefragment);
+        }, $codefragments);
     }
 
-    public function trim_string_min_left_whitespaces($codeFragment) {
-        if (preg_match("/\\r\\n|\\r|\\n/", $codeFragment)) {
-            $codeFragmentBlock = preg_split("/\\r\\n|\\r|\\n/", $codeFragment);
+    public function trim_string_min_left_whitespaces($codefragment) {
+        if (preg_match("/\\r\\n|\\r|\\n/", $codefragment)) {
+            $codefragmentblock = preg_split("/\\r\\n|\\r|\\n/", $codefragment);
             $counter = 0;
-            $aux_array = array();
-            foreach ($codeFragmentBlock as $line) {
+            $auxarray = array();
+            foreach ($codefragmentblock as $line) {
                 foreach (mb_str_split($line) as $char) {
                     if ($char == ' ') {
-                        if (isset($aux_array[$counter])) {
-                            $aux_array[$counter]++;
+                        if (isset($auxarray[$counter])) {
+                            $auxarray[$counter]++;
                         } else {
-                            $aux_array[$counter] = 1;
+                            $auxarray[$counter] = 1;
                         }
                     } else {
                         break;
@@ -230,13 +233,13 @@ class qtype_parsonsproblem_question extends question_graded_automatically {
                 }
                 $counter++;
             }
-            $min = min($aux_array);
-            foreach ($codeFragmentBlock as $index => $line) {
-                $codeFragmentBlock[$index] = substr($line, $min);
+            $min = empty($auxarray) ? (0) : (min($auxarray));
+            foreach ($codefragmentblock as $index => $line) {
+                $codefragmentblock[$index] = substr($line, $min);
             }
-            return implode(PHP_EOL, $codeFragmentBlock);
+            return implode(PHP_EOL, $codefragmentblock);
         }
-        return ltrim($codeFragment);
+        return ltrim($codefragment);
     }
 
     /**
@@ -257,21 +260,6 @@ class qtype_parsonsproblem_question extends question_graded_automatically {
             }
         }
         return $this->answers;
-    }
-
-    /**
-     * Checks whether the user is allowed to be served a particular file.
-     *
-     * @param question_attempt $qa The question attempt being displayed.
-     * @param question_display_options $options The options that control display of the question.
-     * @param string $component The name of the component we are serving files for.
-     * @param string $filearea The name of the file area.
-     * @param array $args the Remaining bits of the file path.
-     * @param bool $forcedownload Whether the user must be forced to download the file.
-     * @return bool True if the user can access this file.
-     */
-    public function check_file_access($qa, $options, $component, $filearea, $args, $forcedownload) {
-        return parent::check_file_access($qa, $options, $component, $filearea, $args, $forcedownload);
     }
 
     /**
@@ -306,15 +294,16 @@ class qtype_parsonsproblem_question extends question_graded_automatically {
     }
 
     public function shuffle_visually_paired($order) {
-        if($this->choicedelimiterexists()) {
-            foreach ($order as $index => $codeFragment) {
-                if (strpos($codeFragment, $this->choicedelimiter) !== false) {
-                    // Trim left and right choice delimiter
-                    $ltrimmed = ltrim(ltrim($codeFragment), $this->choicedelimiter);
+        if ($this->choicedelimiterexists()) {
+            foreach ($order as $index => $codefragment) {
+                if (strpos($codefragment, $this->choicedelimiter) !== false) {
+                    // Trim left and right choice delimiter.
+                    $ltrimmed = ltrim(ltrim($codefragment), $this->choicedelimiter);
                     $randltrimmed = rtrim($ltrimmed, $this->choicedelimiterr);
                     $unshuffled = explode($this->choicedelimiterm, $randltrimmed);
                     shuffle($unshuffled);
-                    $withdelimiters = $this->choicedelimiter . implode($this->choicedelimiterm, $unshuffled) . $this->choicedelimiterr;
+                    $withdelimiters =
+                        $this->choicedelimiter . implode($this->choicedelimiterm, $unshuffled) . $this->choicedelimiterr;
                     $order[$index] = $withdelimiters;
                 }
             }
@@ -324,7 +313,7 @@ class qtype_parsonsproblem_question extends question_graded_automatically {
 
     public function get_distractors() {
         $distractors = array();
-        if($this->distractorsdelimiterexists()) {
+        if ($this->distractorsdelimiterexists()) {
             $distractors = explode($this->distractorsdelimiter,  $this->distractors);
         }
         return $distractors;

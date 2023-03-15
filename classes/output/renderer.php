@@ -43,10 +43,8 @@ class qtype_parsonsproblem_renderer extends qtype_renderer {
      * @return string HTML fragment.
      */
     public function formulation_and_controls(question_attempt $qa, question_display_options $options) {
-        global $PAGE;
         $question = $qa->get_question();
-        // When previewing after a quiz is complete
-        if($options->readonly) {
+        if ($options->readonly) {
             $output = $this->students_answer_render($question, $qa->get_response_summary(), $qa->get_right_answer_summary());
             return parent::formulation_and_controls($qa, $options) . $output;
         }
@@ -57,9 +55,9 @@ class qtype_parsonsproblem_renderer extends qtype_renderer {
         $distractors = $question->get_distractors();
         $order = array_merge($order, $distractors);
         shuffle($order);
-        $rowAmount = 0;
+        $rowamount = 0;
         foreach ($order as $codefragment) {
-            $inputname = 'line' . $rowAmount . '_' . $question->id;
+            $inputname = 'line' . $rowamount . '_' . $question->id;
             $inputattributes = array(
                 'id' => $inputname,
                 'class' => 'parsons sortable-item',
@@ -84,7 +82,7 @@ class qtype_parsonsproblem_renderer extends qtype_renderer {
             } else {
                 $output .= html_writer::tag('div', $codefragment, $inputattributes);
             }
-            $rowAmount++;
+            $rowamount++;
         }
         $output .= html_writer::end_div();
         $output .= html_writer::start_div('parsons sortable-column-right', array('id' => 'column' . $question->id . '1'));
@@ -93,29 +91,21 @@ class qtype_parsonsproblem_renderer extends qtype_renderer {
 
         $responsename = $question->get_response_fieldname();
         $answerid = $qa->get_qt_field_name($responsename);
-        $initialValue = "";
+        $initialvalue = "";
         $output .= html_writer::empty_tag(
             'input', array('type' => 'hidden',
             'name' => $answerid,
             'id' => $answerid,
-            'value' => $initialValue,
+            'value' => $initialvalue,
             )
             );
 
-        $PAGE->requires->js_call_amd('qtype_parsonsproblem/draganddropcodefragments', 'init', array($question->id, $answerid));
+        $this->page->requires->js_call_amd(
+            'qtype_parsonsproblem/draganddropcodefragments',
+            'init',
+            array($question->id, $answerid)
+        );
         return parent::formulation_and_controls($qa, $options) . $output;
-    }
-
-    /**
-     * Generate the specific feedback. This is feedback that varies according to
-     * the response the student gave. This method is only called if the display options
-     * allow this to be shown.
-     *
-     * @param question_attempt $qa the question attempt to display.
-     * @return string HTML fragment.
-     */
-    protected function specific_feedback(question_attempt $qa) {
-        return parent::specific_feedback($qa);
     }
 
     /**
@@ -132,7 +122,10 @@ class qtype_parsonsproblem_renderer extends qtype_renderer {
         $output .= html_writer::tag('p', get_string('correctorder', 'qtype_parsonsproblem'));
         $output .= html_writer::start_tag('ol');
         $rightanswer = $qa->get_right_answer_summary();
-        $rightanswer = $question->codedelimiterexists() ? explode($question->codedelimiter, $rightanswer) :  explode("|/", $rightanswer);
+        $rightanswer = $question->codedelimiterexists() ?
+            explode($question->codedelimiter, $rightanswer)
+            :
+            explode("|/", $rightanswer);
         foreach ($rightanswer as $lineofcode) {
             $output .= html_writer::tag('li', $lineofcode, array('class' => 'parsons-feedback'));
         }
@@ -143,7 +136,10 @@ class qtype_parsonsproblem_renderer extends qtype_renderer {
     public function students_answer_render($question, $responsesummary, $rightanswer) {
         $output = "";
         $responsesummary = explode("|/", $responsesummary);
-        $rightanswer = $question->codedelimiterexists() ? explode($question->codedelimiter, $rightanswer) : explode("|/", $rightanswer);
+        $rightanswer = $question->codedelimiterexists() ?
+            explode($question->codedelimiter, $rightanswer)
+            :
+            explode("|/", $rightanswer);
         $correctlines = $this->get_correct_lines_array($responsesummary, $rightanswer);
         $output .= html_writer::empty_tag('div', array('class' => 'parsons sortable-container'));
         $output .= html_writer::start_div('parsons sortable-column-feedback');
@@ -156,9 +152,8 @@ class qtype_parsonsproblem_renderer extends qtype_renderer {
             }
             $inputattributes = array(
                 'class' => 'parsons sortable-item parsons-feedback' . $status,
-                'style' => 'margin-left:' . strval(($indentations/4) * 50) . 'px',
+                'style' => 'margin-left:' . strval(($indentations / 4) * 50) . 'px',
             );
-            // ltrim $answer
             $output .= html_writer::tag('div', $question->trim_string_min_left_whitespaces($answer), $inputattributes);
         }
         $output .= html_writer::end_div() . html_writer::end_tag('div');
@@ -169,8 +164,11 @@ class qtype_parsonsproblem_renderer extends qtype_renderer {
         $correctlinesarray = array();
         foreach ($responsesummary as $index => $lineofcode) {
             if (isset($rightanswer[$index])) {
-                if ($lineofcode == $rightanswer[$index]) { $correctlinesarray[$index] = true; }
-                else { $correctlinesarray[$index] = false; }
+                if ($lineofcode == $rightanswer[$index]) {
+                    $correctlinesarray[$index] = true;
+                } else {
+                    $correctlinesarray[$index] = false;
+                }
             }
         }
         return $correctlinesarray;

@@ -47,9 +47,16 @@ class qtype_parsonsproblem extends question_type {
      *
      * @return mixed array as above, or null to tell the base class to do nothing.
      */
-    public function extra_question_fields()
-    {
-        return array('qtype_parsonsproblem', 'code', 'codedelimiter', 'choicedelimiter', 'distractors', 'distractorsdelimiter', 'choicedelimiterm', 'choicedelimiterr');
+    public function extra_question_fields() {
+        return array('qtype_parsonsproblem',
+            'code',
+            'codedelimiter',
+            'choicedelimiter',
+            'distractors',
+            'distractorsdelimiter',
+            'choicedelimiterm',
+            'choicedelimiterr'
+        );
     }
 
     /**
@@ -73,30 +80,34 @@ class qtype_parsonsproblem extends question_type {
      *      it is not a standard question object.
      * @return object $result->error or $result->notice
      */
-    public function save_question_answers($question)
-    {
+    public function save_question_answers($question) {
         global $DB;
 
-        // As this function gets called when saving a new question and when editing an existing question
-        // one must consider both cases
+        // As this function gets called when saving a new question and when editing an existing question,
+        // one must consider both cases.
         $context = $question->context;
         $oldanswers = $DB->get_records('question_answers', array('question' => $question->id), 'id ASC');
 
         $unprocessed = $question->code;
-        if(empty($question->codedelimiter)) {
+        if (empty($question->codedelimiter)) {
             $processed = preg_split("/\\r\\n|\\r|\\n/", $unprocessed);
         } else {
             $processed = explode($question->codedelimiter , $unprocessed);
         }
 
-        if(!empty($question->choicedelimiter)) {
-            $processed = $this->remove_choices($processed, $question->choicedelimiter, $question->choicedelimiterm, $question->choicedelimiterr);
+        if (!empty($question->choicedelimiter)) {
+            $processed = $this->remove_choices(
+                $processed,
+                $question->choicedelimiter,
+                $question->choicedelimiterm,
+                $question->choicedelimiterr
+            );
         }
 
-        // Insert all the new answers
+        // Insert all the new answers.
         foreach ($processed as $fragment) {
             // Update an existing answer if possible.
-            if($answer = array_shift($oldanswers)) {
+            if ($answer = array_shift($oldanswers)) {
                 $answer->question = $question->id;
                 $answer->answer = $fragment;
                 $answer->feedback = '';
@@ -125,17 +136,18 @@ class qtype_parsonsproblem extends question_type {
      * Cleans final answer removing incorrect choices in every fragment of code
      * when using visually paired choices
      * @param array $processed  Each fragment of code including incorrect choices
-     * @param string $choicedelimiter  Separator string that separates each choice
+     * @param string $choicedelimiter  Left side delimiter string that starts a visually paired distractor
+     * @param string $choicedelimiterm  Middle delimiter that divides the VPD choices
+     * @param string $choicedelimiterr Right side delimiter string that ends a visually paired distractor
      *
      * @return array $codefragments  Each correct fragment of code
      */
-    public function remove_choices($processed, $choicedelimiterl, $choicedelimiterm, $choicedelimiterr)
-    {
+    public function remove_choices($processed, $choicedelimiterl, $choicedelimiterm, $choicedelimiterr) {
         $codefragments = array();
         foreach ($processed as $possiblefragment) {
-            if(strpos($possiblefragment, $choicedelimiterl) !== false) {
+            if (strpos($possiblefragment, $choicedelimiterl) !== false) {
                 $whitespaces = strpos($possiblefragment, $choicedelimiterl);
-                if($whitespaces > 0) {
+                if ($whitespaces > 0) {
                     $possiblefragment = ltrim($possiblefragment);
                 }
                 $possiblefragment = ltrim($possiblefragment, $choicedelimiterl);
