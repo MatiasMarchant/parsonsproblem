@@ -146,11 +146,11 @@ class qtype_parsonsproblem extends question_type {
         $codefragments = array();
         foreach ($processed as $possiblefragment) {
             if (strpos($possiblefragment, $choicedelimiterl) !== false) {
-                $whitespaces = strpos($possiblefragment, $choicedelimiterl);
+                $possiblefragment = ltrim($possiblefragment, $choicedelimiterl);
+                $whitespaces = strlen($possiblefragment) - strlen(ltrim($possiblefragment));
                 if ($whitespaces > 0) {
                     $possiblefragment = ltrim($possiblefragment);
                 }
-                $possiblefragment = ltrim($possiblefragment, $choicedelimiterl);
                 $possiblefragment = str_repeat(' ', $whitespaces) . $possiblefragment;
                 $possiblefragment = rtrim($possiblefragment, $choicedelimiterr);
                 $possiblefragment = explode($choicedelimiterm, $possiblefragment);

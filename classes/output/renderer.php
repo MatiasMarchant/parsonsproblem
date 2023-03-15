@@ -74,7 +74,7 @@ class qtype_parsonsproblem_renderer extends qtype_renderer {
                         'id' => $inputname . '_' . $choicecounter,
                         'class' => 'sortable-choice',
                     );
-                    $output .= html_writer::tag('div', $choice, $inputattributeschoice);
+                    $output .= html_writer::tag('div', $question->trim_string_min_left_whitespaces($choice), $inputattributeschoice);
                     $choicecounter++;
                 }
 
