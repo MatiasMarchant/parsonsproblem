@@ -80,7 +80,7 @@ class qtype_parsonsproblem_renderer extends qtype_renderer {
 
                 $output .= html_writer::end_div();
             } else {
-                $output .= html_writer::tag('div', $codefragment, $inputattributes);
+                $output .= html_writer::tag('div', $question->trim_string_min_left_whitespaces($codefragment), $inputattributes);
             }
             $rowamount++;
         }

@@ -221,15 +221,19 @@ class qtype_parsonsproblem_question extends question_graded_automatically {
             $auxarray = array();
             foreach ($codefragmentblock as $line) {
                 foreach (mb_str_split($line) as $char) {
-                    if ($char == ' ') {
-                        if (isset($auxarray[$counter])) {
-                            $auxarray[$counter]++;
-                        } else {
-                            $auxarray[$counter] = 1;
-                        }
-                    } else {
+                    if (substr($line, 0, 1) !== ' ') { // If it doesn't start with a white space.
                         $auxarray[$counter] = 0;
                         break;
+                    } else {
+                        if ($char == ' ') {
+                            if (isset($auxarray[$counter])) {
+                                $auxarray[$counter]++;
+                            } else {
+                                $auxarray[$counter] = 1;
+                            }
+                        } else {
+                            break;
+                        }
                     }
                 }
                 $counter++;
