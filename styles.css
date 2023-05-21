@@ -9,6 +9,8 @@
     border: 1px solid #efefff;
     padding: 5px;
     padding-bottom: 10px;
+    /** Add vertical lines **/
+    background-image: repeating-linear-gradient(to right, #aaf 0px, #aaf 3px, transparent 3px, transparent 50px);
 }
 
 .parsons.sortable-column-left {
